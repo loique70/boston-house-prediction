@@ -1,39 +1,47 @@
 <!DOCTYPE html>
 <html>
-<head>
+  <head>
     <title>Prédiction du prix</title>
-    <link rel="stylesheet" href="mystyle.css">
-</head>
-<body>
-    <h1>Prédiction du prix</h1>
+    <link rel="stylesheet" href="mystyle.css" />
+  </head>
+  <body>
+    <h1>House price prediction</h1>
     <div>
-        <form id="predict-form">
-            <label for="RM">RM:</label><br>
-            <input type="text" id="RM" name="RM" value="6.575"><br>
-            <label for="PTRATIO">PTRATIO:</label><br>
-            <input type="text" id="PTRATIO" name="PTRATIO" value="15.3"><br>
-            <label for="LSTAT">LSTAT:</label><br>
-            <input type="text" id="LSTAT" name="LSTAT" value="4.98"><br>
-            <button type="button" onclick="getPrediction()">Prédire</button>
-        </form>
+      <form id="predict-form">
+        <label for="RM">RM:</label><br />
+        <input type="text" id="RM" name="RM" value="6.575" /><br />
+        <label for="PTRATIO">PTRATIO:</label><br />
+        <input type="text" id="PTRATIO" name="PTRATIO" value="15.3" /><br />
+        <label for="LSTAT">LSTAT:</label><br />
+        <input type="text" id="LSTAT" name="LSTAT" value="4.98" /><br />
+        <button type="button" onclick="getPrediction()">Predict</button>
+      </form>
     </div>
     <p id="result"></p>
 
     <script>
-    function getPrediction() {
-        let RM = document.getElementById('RM').value;
-        let PTRATIO = document.getElementById('PTRATIO').value;
-        let LSTAT = document.getElementById('LSTAT').value;
+      function getPrediction() {
+        let RM = parseFloat(document.getElementById("RM").value);
+        let PTRATIO = parseFloat(document.getElementById("PTRATIO").value);
+        let LSTAT = parseFloat(document.getElementById("LSTAT").value);
+
         let xhr = new XMLHttpRequest();
-        xhr.open('POST', 'http://localhost:5000/predict', true);
-        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.open("POST", "http://localhost:8080/predict", true);
+        xhr.setRequestHeader("Content-Type", "application/json");
         xhr.onload = function () {
+          try {
             var data = JSON.parse(this.responseText);
-            document.getElementById('result').textContent = 'Prédiction : ' + data.prediction;
+            var prediction = parseFloat(data.prediction).toFixed(3);
+            document.getElementById("result").textContent =
+              "Predict value : " + prediction;
+          } catch (error) {
+            console.error("Error parsing response:", error);
+          }
         };
-        var data = JSON.stringify({ "RM": RM, "PTRATIO": PTRATIO, "LSTAT": LSTAT });
+
+        var data = JSON.stringify({ RM: RM, PTRATIO: PTRATIO, LSTAT: LSTAT });
         xhr.send(data);
-    }
+      }
     </script>
-</body>
+  </body>
 </html>
